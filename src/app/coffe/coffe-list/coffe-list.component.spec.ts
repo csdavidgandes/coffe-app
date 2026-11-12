@@ -39,5 +39,10 @@ describe('CoffeListComponent', () => {
     const rows = (fixture.nativeElement as HTMLElement).querySelectorAll('tbody tr');
     expect(rows.length).toBe(2);
     expect(rows[1].textContent).toContain('Café Especial Navegante');
+    expect(component.totalOrigen()).toBe(1);
+    expect(component.totalBlend()).toBe(1);
+    const text = (fixture.nativeElement as HTMLElement).textContent;
+    expect(text).toContain('Total café de origen: 1');
+    expect(text).toContain('Total café blend: 1');
   });
 });

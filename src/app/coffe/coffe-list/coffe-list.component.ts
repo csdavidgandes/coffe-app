@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CoffeService } from '../coffe.service';
 import { Coffe } from '../../coffe';
 
@@ -11,6 +11,8 @@ import { Coffe } from '../../coffe';
 export class CoffeListComponent implements OnInit {
   private readonly coffeService = inject(CoffeService);
   readonly coffeList = signal<Coffe[]>([]);
+  readonly totalOrigen = computed(() => this.countByTipo('Café de Origen'));
+  readonly totalBlend = computed(() => this.countByTipo('Blend'));
 
   ngOnInit() {
     this.getCoffeList();
@@ -21,5 +23,9 @@ export class CoffeListComponent implements OnInit {
       next: (data) => this.coffeList.set(data),
       error: (error) => console.error('Error fetching coffee list:', error),
     });
+  }
+
+  private countByTipo(tipo: string): number {
+    return this.coffeList().filter((coffe) => coffe.tipo === tipo).length;
   }
 }
