@@ -1,19 +1,19 @@
-/* tslint:disable:no-unused-variable */
-
-import { TestBed, inject } from '@angular/core/testing';
-import { CoffeService } from './coffe.service';
-import { HttpTestingController } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { faker } from '@faker-js/faker';
 
-describe('Service: Coffe', () => {
+import { CoffeService } from './coffe.service';
+import { Coffe } from '../coffe';
+import { environment } from '../../environments/environment';
 
+describe('CoffeService', () => {
   let service: CoffeService;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [CoffeService, provideHttpClient(), provideHttpClientTesting()]
+      providers: [CoffeService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(CoffeService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -22,25 +22,31 @@ describe('Service: Coffe', () => {
   afterEach(() => {
     httpMock.verify();
   });
-  
-  it('should ...', inject([CoffeService], (service: CoffeService) => {
+
+  it('should be created', () => {
     expect(service).toBeTruthy();
-  }));
-
-  it('should return a list of coffee', () => {
-    const mockCoffeList = [
-      { id: 1, nombre: 'Café de Colombia', tipo: 'Arábica', region: 'Colombia', sabor: 'Dulce y afrutado', altura: 1500, imagen: 'https://example.com/colombia.jpg' },
-      { id: 2, nombre: 'Café de Brasil', tipo: 'Robusta', region: 'Brasil', sabor: 'Fuerte y amargo', altura: 800, imagen: 'https://example.com/brasil.jpg' }
-    ];
-
-    service.getCoffeList().subscribe(coffeList => {
-      expect(coffeList.length).toBe(2);
-      expect(coffeList).toEqual(mockCoffeList);
-    });
-
-    const req = httpMock.expectOne(service['apiUrl']);
-    expect(req.request.method).toBe('GET');
-    req.flush(mockCoffeList);
   });
 
+  it('should return the list of coffees from the API', () => {
+    const mockCoffeList: Coffe[] = Array.from({ length: 2 }, (_, i) =>
+      new Coffe(
+        i + 1,
+        `Café Especial ${faker.person.firstName()}`,
+        faker.helpers.arrayElement(['Blend', 'Café de Origen']),
+        `${faker.location.city()}, ${faker.location.state()}`,
+        faker.word.words(2),
+        faker.number.int({ min: 1200, max: 2200 }),
+        faker.image.url(),
+      ),
+    );
+
+    let result: Coffe[] | undefined;
+    service.getCoffeList().subscribe((coffeList) => (result = coffeList));
+
+    const req = httpMock.expectOne(environment.coffeeDataUrl);
+    expect(req.request.method).toBe('GET');
+    req.flush(mockCoffeList);
+
+    expect(result).toEqual(mockCoffeList);
+  });
 });
