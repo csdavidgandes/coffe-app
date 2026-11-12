@@ -1,0 +1,24 @@
+<div class="row">
+  <div class="col-md-8 col-lg-7">
+    <table class="table">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">Región</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (coffe of coffeList(); track coffe.id) {
+          <tr>
+            <th scope="row">{{ coffe.id }}</th>
+            <td>{{ coffe.nombre }}</td>
+            <td>{{ coffe.tipo }}</td>
+            <td>{{ coffe.region }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
